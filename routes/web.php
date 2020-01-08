@@ -11,7 +11,7 @@
 |
 */
 Route::get('/', function () {
-	echo 1111111;die;
+
     return view('welcome');
 });
 
@@ -44,9 +44,23 @@ Route::post('/test/alipay/notify','Alipay\PayController@notify');
 //接口
 Route::get('/api/test','Api\TestController@test');
 
+Route::get('/text', function () {
+    return view('text');
+});
 
 Route::post('/api/user/reg','Api\TestController@reg');         //用户注册
 Route::post('/api/user/login','Api\TestController@login');     //用户登录
 Route::get('/api/user/list','Api\TestController@userList')->middleware('fileter');     //用户列表
 Route::get('/api/aa','Api\TestController@aa');
 Route::get('/api/dec','Api\TestController@dec');
+Route::get('/api/jm','Api\TestController@jm');
+Route::get('/api/reg','Api\TestController@reg');
+Route::get('/api/jiami','Api\TestController@jiami');
+Route::get('/api/curl1','Api\TestController@curl1');
+Route::get('/api/curl2','Api\TestController@curl2');
+Route::post('/api/curl3','Api\TestController@curl3');
+Route::get('/api/curl4','Api\TestController@curl4');
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');

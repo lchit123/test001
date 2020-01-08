@@ -123,8 +123,156 @@ class TestController extends Controller
 
       }
 
+      public function req()
+      { 
+        echo '<pre>';print_r($_GET);echo '</pre>';
+      }
 
+    public function jm()
+    {
+        $data=$_GET['data'];
+        echo "原文:".$data;echo "</br>";
+        $method="AES-256-CBC";
+        $key="1905_week";
+        $iv="abcdefghigklmnop";
+        $enc_data=openssl_encrypt($data,$method,$key,OPENSSL_RAW_DATA,$iv);
+        $enc_data=base64_encode($enc_data);
+        echo "加密后密文:".$enc_data;"</br>";
+        echo "<hr>";
+        echo "解密:";echo "</br>";
+        $enc_data=base64_decode($enc_data);
+        $dec_data=openssl_decrypt($enc_data,$method,$key,OPENSSL_RAW_DATA,$iv);
+        echo $dec_data;
+    }
+    /**
+     * 解密
+     * @return [type] [description]
+     */
+    public function jim()
+    {
+        $data=$_GET['data'];
+        echo "原文:".$data;echo "</br>";
+        $method="AES-256-CBC";
+        $key="1905_week";
+        $iv="abcdefghigklmnop";
+        echo "解密:";echo "</br>";
+        $enc_data=base64_decode($data);
+        $dec_data=openssl_decrypt($enc_data,$method,$key,OPENSSL_RAW_DATA,$iv);
+        echo $dec_data;
+    }
 
+     /**
+     * 使用私钥对数据加密
+     */
+    public function jiami()
+    {
+        $priv_key=file_get_contents(storage_path("keys/priv.key"));
+        $data="hello worldssss";
+        echo "</br>";
+        echo "待加密数据:" .$data;echo "</br>";
+        openssl_private_encrypt($data, $enc_data, $priv_key);
+        echo $enc_data;
+        $base64_encode_str=base64_encode($enc_data);
+        echo "</br>";
+        echo $base64_encode_str;
+        $url="http://www.wechat.com/api/jim?data=".urlencode($base64_encode_str);
+        echo "<hr>";
+        file_get_contents($url);
+    }
+
+    /**
+     * Curl get
+     */
+    public function curl1()
+    {
+        $url="http://1905api.comcto.com/test/curl1?x=1&y=2&z=3";
+        $ch=curl_init();
+        curl_setopt($ch,CURLOPT_URL,$url);
+        curl_exec($ch);
+        curl_close($ch);
+    }
+    /**
+     * POST传值（form-data）    
+     */
+    public function curl2()
+    {
+        $url="http://1905api.comcto.com/test/curl2";
+        $data=[
+            "x"=>1,
+            "y"=>2,
+            "z"=>3
+        ];
+        $ch=curl_init();
+        curl_setopt($ch,CURLOPT_URL,$url);
+        curl_setopt($ch,CURLOPT_POST,1);
+        curl_setopt($ch,CURLOPT_POSTFIELDS,$data);
+        curl_exec($ch);
+        curl_close($ch);
+    }
+    /**
+     * POST上传文件 
+     */
+    public function curl3()
+    {
+        $data=request()->all();
+        $url="http://1905api.comcto.com/test/curl3";
+        $ch=curl_init();
+        curl_setopt($ch,CURLOPT_URL,$url);
+        curl_setopt($ch,CURLOPT_POST,1);
+        curl_setopt($ch,CURLOPT_POSTFIELDS,$data);
+        curl_exec($ch);
+        curl_close($ch);
+    }
+    /**
+     * POST发送json
+     */
+    public function curl4()
+    {
+        $url="http://1905api.comcto.com/test/curl4";
+        $token ="23456789";
+        $data=[
+            "x"=>1,
+            "y"=>2,
+            "z"=>3
+        ];
+        $json_str=json_encode($data);
+        $ch=curl_init();
+        curl_setopt($ch,CURLOPT_URL,$url);
+        curl_setopt($ch,CURLOPT_POST,1);
+        curl_setopt($ch,CURLOPT_POSTFIELDS,$json_str);
+        curl_setopt($ch,CURLOPT_HTTPHEADER,[
+            "Content-Type:text/plain",
+            "token:".$token
+            ]);
+        curl_exec($ch);
+        curl_close($ch);
+    }
+
+    public function decrypt()
+    {
+        $data=$_GET['data'];
+        echo "原文:".$data;echo "</br>";
+        $data=base64_decode($data);
+        echo "base64_decode:".$data;echo "</br>";
+        $method="AES-256-CBC";
+        $key="1905api";
+        $iv="1234567891234567";
+        $dec_data=openssl_decrypt($data,$method,$key,OPENSSL_RAW_DATA,$iv);
+        echo "解密数据:". $dec_data;
+    }
+    /**
+     * 解密
+     */
+    public function pubDecrypt()
+    {
+        $data=$_GET['data'];
+        echo "接收到的base64的数据:".$data;
+        $pub_key=file_get_contents(storage_path("keys/pub.key"));
+        $base64_decode=base64_decode($data);
+        echo  $base64_decode;
+        openssl_public_decrypt($base64_decode,$dec_data,$pub_key);
+        echo "解密数据:". $dec_data;
+    }
 
 
 
